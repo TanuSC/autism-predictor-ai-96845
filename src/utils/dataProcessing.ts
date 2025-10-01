@@ -194,7 +194,8 @@ class SimpleDecisionTree {
 
   predict(X: number[][]): number[] {
     return X.map(features => {
-      return features[this.feature] <= this.threshold ? this.prediction : 1 - this.prediction;
+      // Simple prediction based on most common class in training
+      return this.prediction;
     });
   }
 }
@@ -315,17 +316,6 @@ export const getModelComparisons = async (data: AutismDataPoint[]): Promise<Mode
     name: 'Random Forest',
     description: 'Ensemble method using multiple decision trees',
     ...rfMetrics
-  });
-  
-  // Neural Network (Enhanced mock with realistic performance)
-  models.push({
-    name: 'Neural Network',
-    description: 'Multi-layer perceptron with backpropagation',
-    accuracy: 0.87 + Math.random() * 0.05,
-    precision: 0.85 + Math.random() * 0.08,
-    recall: 0.83 + Math.random() * 0.10,
-    f1Score: 0.84 + Math.random() * 0.08,
-    confusionMatrix: [[42, 6], [7, 45]]
   });
   
   return models;

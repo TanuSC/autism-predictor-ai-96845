@@ -2,21 +2,18 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { Brain, BarChart3, Users, Target, Database, TrendingUp } from 'lucide-react';
+import { Brain, BarChart3, Users, Target, Database } from 'lucide-react';
 import { DataAnalysis } from './DataAnalysis';
 import { ModelComparison } from './ModelComparison';
 import { PredictionInterface } from './PredictionInterface';
 import { PreprocessingSteps } from './PreprocessingSteps';
-import { FeatureImportance } from './FeatureImportance';
 import { AutismDataPoint, ModelComparison as ModelComparisonType } from '@/types/autism';
-import { loadAutismDataset, getModelComparisons, getTransformerModel } from '@/utils/dataProcessing';
-import { FeatureImportance as FeatureImportanceType } from '@/utils/transformerModel';
+import { loadAutismDataset, getModelComparisons } from '@/utils/dataProcessing';
 import { toast } from '@/hooks/use-toast';
 
 export const AutismDashboard = () => {
   const [data, setData] = useState<AutismDataPoint[]>([]);
   const [models, setModels] = useState<ModelComparisonType[]>([]);
-  const [featureImportances, setFeatureImportances] = useState<FeatureImportanceType[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -32,13 +29,9 @@ export const AutismDashboard = () => {
         const modelResults = await getModelComparisons(dataset);
         setModels(modelResults);
         
-        // Get feature importances from Transformer model
-        const { featureImportances: importances } = await getTransformerModel(dataset);
-        setFeatureImportances(importances);
-        
         toast({
           title: "Dashboard Initialized",
-          description: `Loaded ${dataset.length} data points and trained ${modelResults.length} models with Transformer`,
+          description: `Loaded ${dataset.length} data points and trained ${modelResults.length} models`,
         });
       } catch (error) {
         console.error('Failed to initialize dashboard:', error);
@@ -88,10 +81,7 @@ export const AutismDashboard = () => {
           <div className="flex items-center gap-4 mb-4">
             <Brain className="h-10 w-10" />
             <div>
-              <h1 className="text-3xl font-bold">Autism Screening & Prediction System</h1>
-              <p className="text-primary-foreground/80">
-                AI-powered early detection for children using machine learning
-              </p>
+              <h1 className="text-3xl font-bold">Autism Spectrum Disorder Prediction System</h1>
             </div>
           </div>
           
@@ -135,7 +125,7 @@ export const AutismDashboard = () => {
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8">
         <Tabs defaultValue="preprocessing" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5 bg-card shadow-soft">
+          <TabsList className="grid w-full grid-cols-4 bg-card shadow-soft">
             <TabsTrigger value="preprocessing" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               Preprocessing
             </TabsTrigger>
@@ -144,9 +134,6 @@ export const AutismDashboard = () => {
             </TabsTrigger>
             <TabsTrigger value="models" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               Model Comparison
-            </TabsTrigger>
-            <TabsTrigger value="importance" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-              Feature Importance
             </TabsTrigger>
             <TabsTrigger value="prediction" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               Prediction Tool
@@ -200,23 +187,6 @@ export const AutismDashboard = () => {
               </CardHeader>
               <CardContent>
                 <ModelComparison models={models} />
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="importance" className="space-y-6">
-            <Card className="shadow-medium">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <TrendingUp className="h-5 w-5 text-primary" />
-                  Feature Importance Analysis
-                </CardTitle>
-                <CardDescription>
-                  Identifying key features for early autism prediction using Transformer attention
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <FeatureImportance importances={featureImportances} />
               </CardContent>
             </Card>
           </TabsContent>
