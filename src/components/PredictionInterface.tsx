@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Brain, AlertTriangle, CheckCircle, Info } from 'lucide-react';
+import { Brain, AlertTriangle, CheckCircle, Info, InfoIcon } from 'lucide-react';
 import { ModelComparison, PredictionInput, PredictionResult, QuestionnaireResponse, QUESTIONNAIRE_ITEMS } from '@/types/autism';
 import { responseToNumber } from '@/utils/dataProcessing';
 import { toast } from '@/hooks/use-toast';
@@ -203,23 +203,99 @@ export const PredictionInterface = ({ models }: PredictionInterfaceProps) => {
                 <div className="text-sm text-muted-foreground">Total Score</div>
               </div>
             </div>
+          </CardContent>
+        </Card>
 
-            <div className="flex justify-center pt-4">
-              <Button onClick={resetAssessment} variant="outline" size="lg">
-                Take New Assessment
-              </Button>
+        {/* Comprehensive Parent Guidance */}
+        <Card className="border-primary/20">
+          <CardHeader>
+            <CardTitle className="text-lg flex items-center gap-2">
+              <InfoIcon className="h-5 w-5 text-primary" />
+              Helpful Strategies & Support
+            </CardTitle>
+            <CardDescription>
+              Evidence-based approaches to support your child's development
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <h4 className="font-semibold text-sm mb-2">🗣️ Communication Support</h4>
+              <ul className="text-sm text-muted-foreground space-y-1 ml-4">
+                <li>• Use clear, simple language and give your child extra time to respond</li>
+                <li>• Use visual aids like pictures or gestures to support understanding</li>
+                <li>• Practice turn-taking in conversations during daily activities</li>
+                <li>• Celebrate all communication attempts, verbal and non-verbal</li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="font-semibold text-sm mb-2">🤝 Social Skills Development</h4>
+              <ul className="text-sm text-muted-foreground space-y-1 ml-4">
+                <li>• Arrange regular playdates with one or two peers in structured settings</li>
+                <li>• Practice social scenarios through role-play at home</li>
+                <li>• Use social stories to prepare for new situations</li>
+                <li>• Join parent-child groups focused on social skill building</li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="font-semibold text-sm mb-2">🎯 Sensory & Behavioral Support</h4>
+              <ul className="text-sm text-muted-foreground space-y-1 ml-4">
+                <li>• Create a calm, predictable home environment with consistent routines</li>
+                <li>• Identify and minimize sensory triggers (loud noises, bright lights, textures)</li>
+                <li>• Provide sensory breaks and calming activities when needed</li>
+                <li>• Use positive reinforcement for desired behaviors</li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="font-semibold text-sm mb-2">📚 Learning & Development</h4>
+              <ul className="text-sm text-muted-foreground space-y-1 ml-4">
+                <li>• Build on your child's strengths and special interests</li>
+                <li>• Break tasks into smaller, manageable steps</li>
+                <li>• Use visual schedules to support daily routines</li>
+                <li>• Incorporate play-based learning activities</li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="font-semibold text-sm mb-2">👨‍👩‍👧 Family Well-being</h4>
+              <ul className="text-sm text-muted-foreground space-y-1 ml-4">
+                <li>• Connect with support groups for parents of children with similar needs</li>
+                <li>• Practice self-care and seek support when feeling overwhelmed</li>
+                <li>• Educate family members about your child's unique needs</li>
+                <li>• Celebrate small victories and progress</li>
+              </ul>
+            </div>
+
+            <div className="p-3 bg-primary/5 rounded-lg border border-primary/20">
+              <h4 className="font-semibold text-sm mb-2 text-primary">⏱️ Next Steps Timeline</h4>
+              <ul className="text-sm text-muted-foreground space-y-1 ml-4">
+                <li>• <strong>Immediate:</strong> Start implementing the strategies above</li>
+                <li>• <strong>Within 1-2 weeks:</strong> Schedule an appointment with your pediatrician</li>
+                <li>• <strong>Within 1 month:</strong> Request a developmental evaluation if recommended</li>
+                <li>• <strong>Ongoing:</strong> Track your child's progress and responses to interventions</li>
+              </ul>
             </div>
           </CardContent>
         </Card>
 
         {/* Disclaimer */}
         <Alert>
-          <Info className="h-4 w-4" />
+          <InfoIcon className="h-4 w-4" />
           <AlertDescription>
             <strong>Important:</strong> This tool is for screening purposes only and should not replace professional medical diagnosis. 
-            Always consult with qualified healthcare professionals for comprehensive evaluation and diagnosis.
+            These strategies are general recommendations. Always consult with healthcare professionals 
+            (pediatrician, developmental psychologist, or autism specialist) for personalized guidance 
+            and proper evaluation.
           </AlertDescription>
         </Alert>
+
+        <div className="flex justify-center">
+          <Button onClick={resetAssessment} variant="outline" size="lg">
+            Take New Assessment
+          </Button>
+        </div>
       </div>
     );
   }

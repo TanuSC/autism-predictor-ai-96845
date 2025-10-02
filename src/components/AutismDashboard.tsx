@@ -3,9 +3,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Brain, BarChart3, Users, Target, Database } from 'lucide-react';
-import { DataAnalysis } from './DataAnalysis';
-import { ModelComparison } from './ModelComparison';
+import { EnhancedDataAnalysis } from './EnhancedDataAnalysis';
+import { ImprovedModelComparison } from './ImprovedModelComparison';
 import { PredictionInterface } from './PredictionInterface';
+import { AutismChatbot } from './AutismChatbot';
 import { PreprocessingSteps } from './PreprocessingSteps';
 import { AutismDataPoint, ModelComparison as ModelComparisonType } from '@/types/autism';
 import { loadAutismDataset, getModelComparisons } from '@/utils/dataProcessing';
@@ -125,7 +126,7 @@ export const AutismDashboard = () => {
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8">
         <Tabs defaultValue="preprocessing" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 bg-card shadow-soft">
+          <TabsList className="grid w-full grid-cols-5 bg-card shadow-soft">
             <TabsTrigger value="preprocessing" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               Preprocessing
             </TabsTrigger>
@@ -133,10 +134,13 @@ export const AutismDashboard = () => {
               Data Analysis
             </TabsTrigger>
             <TabsTrigger value="models" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-              Model Comparison
+              Model Performance
             </TabsTrigger>
             <TabsTrigger value="prediction" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               Prediction Tool
+            </TabsTrigger>
+            <TabsTrigger value="chatbot" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              AI Assistant
             </TabsTrigger>
           </TabsList>
 
@@ -169,7 +173,7 @@ export const AutismDashboard = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <DataAnalysis data={data} />
+                <EnhancedDataAnalysis data={data} />
               </CardContent>
             </Card>
           </TabsContent>
@@ -179,14 +183,14 @@ export const AutismDashboard = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Target className="h-5 w-5 text-primary" />
-                  Machine Learning Model Performance
+                  Deep Neural Network Performance
                 </CardTitle>
                 <CardDescription>
-                  Comparison of different ML algorithms for autism prediction
+                  Advanced machine learning model optimized for autism screening prediction
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <ModelComparison models={models} />
+                <ImprovedModelComparison models={models} />
               </CardContent>
             </Card>
           </TabsContent>
@@ -199,13 +203,17 @@ export const AutismDashboard = () => {
                   Autism Screening Tool
                 </CardTitle>
                 <CardDescription>
-                  Interactive assessment tool for autism risk prediction
+                  Interactive assessment tool with personalized guidance for parents
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <PredictionInterface models={models} />
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="chatbot" className="space-y-6">
+            <AutismChatbot />
           </TabsContent>
         </Tabs>
       </div>

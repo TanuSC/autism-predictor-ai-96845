@@ -200,27 +200,47 @@ class SimpleDecisionTree {
   }
 }
 
-// Prepare features for ML models
+// Prepare features for ML models with z-score normalization
 export const prepareFeatures = (data: AutismDataPoint[]): { X: number[][], y: number[] } => {
-  const X = data.map(item => [
-    item.Age / 12, // Normalize age
-    item.Gender === 'M' ? 1 : 0, // Binary encode gender
-    responseToNumber(item.Q1) / 4, // Normalize responses
-    responseToNumber(item.Q2) / 4,
-    responseToNumber(item.Q3) / 4,
-    responseToNumber(item.Q4) / 4,
-    responseToNumber(item.Q5) / 4,
-    responseToNumber(item.Q6) / 4,
-    responseToNumber(item.Q7) / 4,
-    responseToNumber(item.Q8) / 4,
-    responseToNumber(item.Q9) / 4,
-    responseToNumber(item.Q10) / 4,
-    item.Total_Score / 40 // Normalize total score
-  ]);
-  
-  const y = data.map(item => item.ASD_Label);
-  
-  return { X, y };
+  const rawFeatures: number[][] = [];
+  const labels: number[] = [];
+
+  data.forEach(point => {
+    const feature = [
+      point.Age,
+      point.Gender === 'M' ? 1 : 0,
+      responseToNumber(point.Q1),
+      responseToNumber(point.Q2),
+      responseToNumber(point.Q3),
+      responseToNumber(point.Q4),
+      responseToNumber(point.Q5),
+      responseToNumber(point.Q6),
+      responseToNumber(point.Q7),
+      responseToNumber(point.Q8),
+      responseToNumber(point.Q9),
+      responseToNumber(point.Q10),
+      point.Total_Score,
+    ];
+    rawFeatures.push(feature);
+    labels.push(point.ASD_Label);
+  });
+
+  // Z-score normalization
+  const features = rawFeatures[0].map((_, colIdx) => {
+    const column = rawFeatures.map(row => row[colIdx]);
+    const mean = column.reduce((a, b) => a + b, 0) / column.length;
+    const std = Math.sqrt(column.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / column.length);
+    return { mean, std };
+  });
+
+  const normalizedFeatures = rawFeatures.map(row =>
+    row.map((val, colIdx) => {
+      const { mean, std } = features[colIdx];
+      return std === 0 ? 0 : (val - mean) / std;
+    })
+  );
+
+  return { X: normalizedFeatures, y: labels };
 };
 
 // Train-test split
@@ -319,43 +339,4 @@ export const getModelComparisons = async (data: AutismDataPoint[]): Promise<Mode
   });
   
   return models;
-};
-
-// Get trained Transformer model for feature importance
-export const getTransformerModel = async (data: AutismDataPoint[]) => {
-  const { TabularTransformer } = await import('./transformerModel');
-  const { X, y } = prepareFeatures(data);
-  const { XTrain, yTrain } = trainTestSplit(X, y);
-  
-  const transformer = new TabularTransformer({
-    inputDim: X[0].length,
-    hiddenDim: 64,
-    numHeads: 4,
-    numLayers: 2,
-    learningRate: 0.001,
-    epochs: 100
-  });
-  
-  transformer.fit(XTrain, yTrain);
-  
-  const featureNames = [
-    'Age (Normalized)',
-    'Gender (M/F)',
-    'Q1: Eye Contact',
-    'Q2: Joint Attention',
-    'Q3: Pointing (Want)',
-    'Q4: Pointing (Share)',
-    'Q5: Pretend Play',
-    'Q6: Following Gaze',
-    'Q7: Empathy Response',
-    'Q8: First Words',
-    'Q9: Gestures',
-    'Q10: Staring Behavior',
-    'Total Score'
-  ];
-  
-  return {
-    model: transformer,
-    featureImportances: transformer.getFeatureImportance(featureNames)
-  };
 };
