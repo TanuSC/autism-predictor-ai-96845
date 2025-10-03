@@ -125,11 +125,8 @@ export const AutismDashboard = () => {
 
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8">
-        <Tabs defaultValue="preprocessing" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5 bg-card shadow-soft">
-            <TabsTrigger value="preprocessing" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-              Preprocessing
-            </TabsTrigger>
+        <Tabs defaultValue="analysis" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-4 bg-card shadow-soft">
             <TabsTrigger value="analysis" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               Data Analysis
             </TabsTrigger>
@@ -140,26 +137,9 @@ export const AutismDashboard = () => {
               Prediction Tool
             </TabsTrigger>
             <TabsTrigger value="chatbot" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-              AI Assistant
+              Assistance
             </TabsTrigger>
           </TabsList>
-
-          <TabsContent value="preprocessing" className="space-y-6">
-            <Card className="shadow-medium">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Database className="h-5 w-5 text-primary" />
-                  Data Preprocessing Pipeline
-                </CardTitle>
-                <CardDescription>
-                  Comprehensive data preparation including encoding, normalization, and splitting
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <PreprocessingSteps data={data} />
-              </CardContent>
-            </Card>
-          </TabsContent>
 
           <TabsContent value="analysis" className="space-y-6">
             <Card className="shadow-medium">

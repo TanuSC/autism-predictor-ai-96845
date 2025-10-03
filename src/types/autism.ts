@@ -41,6 +41,7 @@ export interface PredictionResult {
   confidence: number;
   riskLevel: 'Low' | 'Medium' | 'High';
   recommendation: string;
+  riskPercentage?: number;
 }
 
 export const QUESTIONNAIRE_ITEMS = [

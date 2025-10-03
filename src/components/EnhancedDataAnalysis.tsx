@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { AutismDataPoint } from '@/types/autism';
+import { DataSplitControl } from './DataSplitControl';
 
 interface EnhancedDataAnalysisProps {
   data: AutismDataPoint[];
@@ -9,33 +10,36 @@ interface EnhancedDataAnalysisProps {
 
 export const EnhancedDataAnalysis = ({ data }: EnhancedDataAnalysisProps) => {
   const analytics = useMemo(() => {
-    const ageDistribution = Array.from({ length: 10 }, (_, i) => ({
-      age: `${i * 5}-${(i + 1) * 5}`,
-      count: data.filter(d => d.Age >= i * 5 && d.Age < (i + 1) * 5).length
-    }));
-
-    const genderData = [
-      { name: 'Male', value: data.filter(d => d.Gender === 'M').length },
-      { name: 'Female', value: data.filter(d => d.Gender === 'F').length }
+    const ageDistribution = [
+      { age: '0-5', count: data.filter(d => d.Age >= 0 && d.Age < 5).length },
+      { age: '5-10', count: data.filter(d => d.Age >= 5 && d.Age < 10).length },
+      { age: '10-15', count: data.filter(d => d.Age >= 10 && d.Age < 15).length },
+      { age: '15-18', count: data.filter(d => d.Age >= 15 && d.Age <= 18).length }
     ];
 
-    const asdByAge = Array.from({ length: 10 }, (_, i) => {
-      const ageGroup = data.filter(d => d.Age >= i * 5 && d.Age < (i + 1) * 5);
-      const asdCount = ageGroup.filter(d => d.ASD_Label === 1).length;
-      return {
-        age: `${i * 5}-${(i + 1) * 5}`,
-        prevalence: ageGroup.length > 0 ? (asdCount / ageGroup.length) * 100 : 0
-      };
-    });
+    const genderData = [
+      { name: 'Male', value: data.filter(d => d.Gender === 'M').length, color: 'hsl(var(--primary))' },
+      { name: 'Female', value: data.filter(d => d.Gender === 'F').length, color: 'hsl(var(--chart-2))' }
+    ];
 
-    const scoreDistribution = Array.from({ length: 11 }, (_, i) => {
-      const scoreRange = i * 4;
-      return {
-        score: `${scoreRange}`,
-        ASD: data.filter(d => d.ASD_Label === 1 && Math.floor(d.Total_Score / 4) === i).length,
-        'Non-ASD': data.filter(d => d.ASD_Label === 0 && Math.floor(d.Total_Score / 4) === i).length
-      };
-    });
+    const asdByAge = [
+      { age: '0-5', prevalence: (() => {
+        const group = data.filter(d => d.Age >= 0 && d.Age < 5);
+        return group.length > 0 ? (group.filter(d => d.ASD_Label === 1).length / group.length) * 100 : 0;
+      })() },
+      { age: '5-10', prevalence: (() => {
+        const group = data.filter(d => d.Age >= 5 && d.Age < 10);
+        return group.length > 0 ? (group.filter(d => d.ASD_Label === 1).length / group.length) * 100 : 0;
+      })() },
+      { age: '10-15', prevalence: (() => {
+        const group = data.filter(d => d.Age >= 10 && d.Age < 15);
+        return group.length > 0 ? (group.filter(d => d.ASD_Label === 1).length / group.length) * 100 : 0;
+      })() },
+      { age: '15-18', prevalence: (() => {
+        const group = data.filter(d => d.Age >= 15 && d.Age <= 18);
+        return group.length > 0 ? (group.filter(d => d.ASD_Label === 1).length / group.length) * 100 : 0;
+      })() }
+    ];
 
     // Question response comparison
     const questionComparison = Array.from({ length: 10 }, (_, i) => {
@@ -65,7 +69,6 @@ export const EnhancedDataAnalysis = ({ data }: EnhancedDataAnalysisProps) => {
       ageDistribution,
       genderData,
       asdByAge,
-      scoreDistribution,
       questionComparison,
       totalCases,
       asdCases,
@@ -73,8 +76,6 @@ export const EnhancedDataAnalysis = ({ data }: EnhancedDataAnalysisProps) => {
       avgScore
     };
   }, [data]);
-
-  const COLORS = ['hsl(var(--primary))', 'hsl(var(--secondary))'];
 
   return (
     <div className="space-y-6">
@@ -155,8 +156,8 @@ export const EnhancedDataAnalysis = ({ data }: EnhancedDataAnalysisProps) => {
                   fill="#8884d8"
                   dataKey="value"
                 >
-                  {analytics.genderData.map((_, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  {analytics.genderData.map((entry) => (
+                    <Cell key={entry.name} fill={entry.color} />
                   ))}
                 </Pie>
                 <Tooltip />
@@ -166,47 +167,28 @@ export const EnhancedDataAnalysis = ({ data }: EnhancedDataAnalysisProps) => {
         </Card>
       </div>
 
-      {/* Charts Row 2 */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>ASD Prevalence by Age</CardTitle>
-            <CardDescription>Percentage of ASD cases in each age group</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={analytics.asdByAge}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="age" label={{ value: 'Age Group', position: 'insideBottom', offset: -5 }} />
-                <YAxis label={{ value: 'Prevalence (%)', angle: -90, position: 'insideLeft' }} />
-                <Tooltip />
-                <Legend />
-                <Line type="monotone" dataKey="prevalence" stroke="hsl(var(--primary))" strokeWidth={2} />
-              </LineChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
+      {/* ASD Prevalence by Age */}
+      <Card>
+        <CardHeader>
+          <CardTitle>ASD Prevalence by Age</CardTitle>
+          <CardDescription>Percentage of ASD cases in each age group</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={analytics.asdByAge}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="age" label={{ value: 'Age Group', position: 'insideBottom', offset: -5 }} />
+              <YAxis label={{ value: 'Prevalence (%)', angle: -90, position: 'insideLeft' }} />
+              <Tooltip />
+              <Legend />
+              <Line type="monotone" dataKey="prevalence" stroke="hsl(var(--primary))" strokeWidth={2} />
+            </LineChart>
+          </ResponsiveContainer>
+        </CardContent>
+      </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Score Distribution by ASD Status</CardTitle>
-            <CardDescription>Comparison of total scores between groups</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={analytics.scoreDistribution}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="score" label={{ value: 'Total Score', position: 'insideBottom', offset: -5 }} />
-                <YAxis label={{ value: 'Count', angle: -90, position: 'insideLeft' }} />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="ASD" fill="hsl(var(--primary))" />
-                <Bar dataKey="Non-ASD" fill="hsl(var(--secondary))" />
-              </BarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-      </div>
+      {/* Data Splitting Control */}
+      <DataSplitControl totalDataPoints={data.length} />
 
       {/* Question Response Analysis */}
       <Card>

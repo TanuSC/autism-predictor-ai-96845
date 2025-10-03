@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { MessageCircle, Send } from 'lucide-react';
+import { MessageCircle } from 'lucide-react';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -29,24 +28,23 @@ const PREDEFINED_QA = {
 };
 
 const QUICK_QUESTIONS = [
-  { id: 'signs', label: 'Early Signs of Autism' },
-  { id: 'diagnosis', label: 'Diagnosis Process' },
-  { id: 'intervention', label: 'Early Intervention' },
-  { id: 'support', label: 'Support Resources' },
-  { id: 'school', label: 'School Support' },
-  { id: 'therapy', label: 'Therapy Options' },
-  { id: 'behavior', label: 'Behavior Management' },
-  { id: 'development', label: 'Supporting Development' }
+  { id: 'signs', label: 'What are early signs of autism?' },
+  { id: 'diagnosis', label: 'How is autism diagnosed?' },
+  { id: 'intervention', label: 'What is early intervention?' },
+  { id: 'support', label: 'Where can I find support resources?' },
+  { id: 'school', label: 'What school accommodations are available?' },
+  { id: 'therapy', label: 'What therapy options exist?' },
+  { id: 'behavior', label: 'How to manage challenging behaviors?' },
+  { id: 'development', label: 'How to support my child\'s development?' }
 ];
 
 export const AutismChatbot = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'assistant',
-      content: 'Hello! I\'m here to provide information about autism and support strategies. You can ask me questions or click on the quick topics below to get started.'
+      content: 'Hello! I\'m here to provide information about autism and support strategies. Please click on any question below to get started.'
     }
   ]);
-  const [input, setInput] = useState('');
 
   const handleQuickQuestion = (questionId: string) => {
     const question = QUICK_QUESTIONS.find(q => q.id === questionId);
@@ -60,52 +58,27 @@ export const AutismChatbot = () => {
     }
   };
 
-  const handleSend = () => {
-    if (!input.trim()) return;
-
-    const userMessage: Message = { role: 'user', content: input };
-    setMessages(prev => [...prev, userMessage]);
-
-    // Simple keyword matching for predefined answers
-    const lowerInput = input.toLowerCase();
-    let response = 'Thank you for your question. For specific medical advice, please consult with a healthcare professional. You can also explore the quick topics above for general information about autism support and strategies.';
-
-    for (const [key, value] of Object.entries(PREDEFINED_QA)) {
-      if (lowerInput.includes(key) || 
-          (key === 'signs' && (lowerInput.includes('symptom') || lowerInput.includes('indicator'))) ||
-          (key === 'therapy' && lowerInput.includes('treatment')) ||
-          (key === 'support' && (lowerInput.includes('help') || lowerInput.includes('resource')))) {
-        response = value;
-        break;
-      }
-    }
-
-    const assistantMessage: Message = { role: 'assistant', content: response };
-    setMessages(prev => [...prev, assistantMessage]);
-    setInput('');
-  };
 
   return (
-    <Card className="h-[600px] flex flex-col">
+    <Card className="h-[700px] flex flex-col">
       <CardHeader>
         <div className="flex items-center gap-2">
           <MessageCircle className="h-5 w-5 text-primary" />
           <div>
-            <CardTitle>Autism Support Assistant</CardTitle>
-            <CardDescription>Get answers to common questions about autism</CardDescription>
+            <CardTitle>Autism Support Assistance</CardTitle>
+            <CardDescription>Get answers to common questions about autism by clicking on the questions below</CardDescription>
           </div>
         </div>
       </CardHeader>
       <CardContent className="flex-1 flex flex-col gap-4 p-4">
         {/* Quick Questions */}
-        <div className="flex flex-wrap gap-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {QUICK_QUESTIONS.map(q => (
             <Button
               key={q.id}
               variant="outline"
-              size="sm"
               onClick={() => handleQuickQuestion(q.id)}
-              className="text-xs"
+              className="text-left justify-start h-auto py-3 px-4"
             >
               {q.label}
             </Button>
@@ -121,31 +94,18 @@ export const AutismChatbot = () => {
                 className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 <div
-                  className={`max-w-[80%] rounded-lg p-3 ${
+                  className={`max-w-[85%] rounded-lg p-4 ${
                     message.role === 'user'
                       ? 'bg-primary text-primary-foreground'
                       : 'bg-muted'
                   }`}
                 >
-                  <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                  <p className="text-sm whitespace-pre-wrap leading-relaxed">{message.content}</p>
                 </div>
               </div>
             ))}
           </div>
         </ScrollArea>
-
-        {/* Input */}
-        <div className="flex gap-2">
-          <Input
-            placeholder="Type your question..."
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-          />
-          <Button onClick={handleSend} size="icon">
-            <Send className="h-4 w-4" />
-          </Button>
-        </div>
       </CardContent>
     </Card>
   );

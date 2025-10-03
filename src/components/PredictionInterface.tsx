@@ -7,10 +7,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Brain, AlertTriangle, CheckCircle, Info, InfoIcon } from 'lucide-react';
+import { Brain, AlertTriangle, CheckCircle, Info, InfoIcon, Download } from 'lucide-react';
 import { ModelComparison, PredictionInput, PredictionResult, QuestionnaireResponse, QUESTIONNAIRE_ITEMS } from '@/types/autism';
 import { responseToNumber } from '@/utils/dataProcessing';
 import { toast } from '@/hooks/use-toast';
+import { generatePDF } from '@/utils/pdfExport';
+import { PredictionFeedback } from './PredictionFeedback';
 
 interface PredictionInterfaceProps {
   models: ModelComparison[];
@@ -43,15 +45,15 @@ export const PredictionInterface = ({ models }: PredictionInterfaceProps) => {
     let riskScore = 0;
     
     // Age factor (younger children have different patterns)
-    if (formData.age <= 3) riskScore += 0.1;
-    else if (formData.age >= 10) riskScore += 0.05;
+    if (formData.age <= 3) riskScore += 0.05;
+    else if (formData.age >= 10) riskScore += 0.03;
     
     // Gender factor (males have higher prevalence)
-    if (formData.gender === 'M') riskScore += 0.1;
+    if (formData.gender === 'M') riskScore += 0.05;
     
-    // Score-based risk assessment
+    // Score-based risk assessment (primary factor)
     const normalizedScore = totalScore / 40; // Max possible score is 40
-    riskScore += normalizedScore * 0.8;
+    riskScore = normalizedScore * 0.85 + (riskScore * 0.15);
     
     // Response pattern analysis (looking for specific patterns)
     const highRiskResponses = formData.responses.filter(r => 
@@ -62,34 +64,49 @@ export const PredictionInterface = ({ models }: PredictionInterfaceProps) => {
       r === 'never' || r === 'rarely'
     ).length;
     
-    if (highRiskResponses >= 6) riskScore += 0.2;
-    if (lowEngagementResponses >= 6) riskScore += 0.15;
+    if (highRiskResponses >= 6) riskScore += 0.1;
+    if (lowEngagementResponses >= 7) riskScore += 0.05;
     
     // Clamp risk score between 0 and 1
     riskScore = Math.max(0, Math.min(1, riskScore));
     
-    const prediction = riskScore >= 0.6 ? 1 : 0;
-    const confidence = riskScore >= 0.6 ? riskScore : 1 - riskScore;
+    // Convert to percentage (0-100)
+    const riskPercentage = riskScore * 100;
+    
+    const prediction = riskPercentage >= 50 ? 1 : 0;
     
     let riskLevel: 'Low' | 'Medium' | 'High';
-    if (riskScore < 0.3) riskLevel = 'Low';
-    else if (riskScore < 0.7) riskLevel = 'Medium';
-    else riskLevel = 'High';
+    let confidence: number;
+    
+    if (riskPercentage < 35) {
+      riskLevel = 'Low';
+      confidence = (35 - riskPercentage) / 35; // Higher confidence when further from threshold
+    } else if (riskPercentage < 65) {
+      riskLevel = 'Medium';
+      confidence = 0.7; // Medium confidence for middle range
+    } else {
+      riskLevel = 'High';
+      confidence = (riskPercentage - 65) / 35; // Higher confidence when further from threshold
+    }
+    
+    // Ensure confidence is between 0.6 and 0.95
+    confidence = Math.min(0.95, Math.max(0.6, confidence));
     
     let recommendation: string;
-    if (prediction === 1) {
-      recommendation = 'We recommend consulting with a pediatric developmental specialist or child psychologist for a comprehensive evaluation. Early screening and intervention can significantly improve outcomes.';
+    if (riskLevel === 'High') {
+      recommendation = 'We strongly recommend consulting with a pediatric developmental specialist or child psychologist for a comprehensive evaluation. Early screening and intervention can significantly improve outcomes.';
     } else if (riskLevel === 'Medium') {
-      recommendation = 'While the current assessment suggests lower risk, continue monitoring your child\'s development and consult with your pediatrician if you have concerns.';
+      recommendation = 'While the assessment shows moderate indicators, we recommend discussing these observations with your pediatrician. Continue monitoring your child\'s development closely.';
     } else {
-      recommendation = 'The assessment suggests typical development patterns. Continue regular developmental check-ups with your pediatrician.';
+      recommendation = 'The assessment suggests typical development patterns. Continue regular developmental check-ups with your pediatrician and implement the supportive strategies provided below.';
     }
     
     return {
       prediction: prediction as 0 | 1,
       confidence,
       riskLevel,
-      recommendation
+      recommendation,
+      riskPercentage
     };
   };
 
@@ -161,14 +178,20 @@ export const PredictionInterface = ({ models }: PredictionInterfaceProps) => {
                     {prediction.riskLevel} Risk
                   </Badge>
                 </div>
-                <div className="text-lg text-muted-foreground">
-                  Confidence: {(prediction.confidence * 100).toFixed(1)}%
+                <div className="text-3xl font-bold mt-4">
+                  {prediction.riskPercentage?.toFixed(1)}%
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  Risk Level (0-100%)
+                </div>
+                <div className="text-base text-muted-foreground mt-2">
+                  Assessment Confidence: {(prediction.confidence * 100).toFixed(1)}%
                 </div>
               </div>
               
               <Progress 
-                value={prediction.confidence * 100} 
-                className="h-3"
+                value={prediction.riskPercentage || 0} 
+                className="h-4"
               />
             </div>
 
@@ -291,7 +314,19 @@ export const PredictionInterface = ({ models }: PredictionInterfaceProps) => {
           </AlertDescription>
         </Alert>
 
-        <div className="flex justify-center">
+        {/* Feedback Section */}
+        <PredictionFeedback predictionId={Date.now().toString()} />
+
+        <div className="flex flex-col sm:flex-row justify-center gap-4">
+          <Button 
+            onClick={() => generatePDF(prediction, formData)} 
+            variant="default" 
+            size="lg"
+            className="gap-2"
+          >
+            <Download className="h-4 w-4" />
+            Download PDF Report
+          </Button>
           <Button onClick={resetAssessment} variant="outline" size="lg">
             Take New Assessment
           </Button>
