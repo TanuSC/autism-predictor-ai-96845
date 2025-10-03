@@ -2,7 +2,6 @@ import { useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { AutismDataPoint } from '@/types/autism';
-import { DataSplitControl } from './DataSplitControl';
 
 interface EnhancedDataAnalysisProps {
   data: AutismDataPoint[];
@@ -184,38 +183,6 @@ export const EnhancedDataAnalysis = ({ data }: EnhancedDataAnalysisProps) => {
               <Line type="monotone" dataKey="prevalence" stroke="hsl(var(--primary))" strokeWidth={2} />
             </LineChart>
           </ResponsiveContainer>
-        </CardContent>
-      </Card>
-
-      {/* Data Splitting Control */}
-      <DataSplitControl totalDataPoints={data.length} />
-
-      {/* Question Response Analysis */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Question Response Patterns</CardTitle>
-          <CardDescription>
-            Average response scores (0-4 scale) comparing ASD and Non-ASD groups
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ResponsiveContainer width="100%" height={400}>
-            <BarChart data={analytics.questionComparison} layout="horizontal">
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis type="number" domain={[0, 4]} label={{ value: 'Average Response Score', position: 'insideBottom', offset: -5 }} />
-              <YAxis type="category" dataKey="question" label={{ value: 'Question', angle: -90, position: 'insideLeft' }} />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="ASD Group" fill="hsl(var(--primary))" />
-              <Bar dataKey="Non-ASD Group" fill="hsl(var(--secondary))" />
-            </BarChart>
-          </ResponsiveContainer>
-          <div className="mt-4 p-4 bg-muted rounded-lg">
-            <p className="text-sm text-muted-foreground">
-              <strong>Key Insights:</strong> Questions with larger differences between groups may be more indicative of ASD.
-              Higher scores in the ASD group suggest behaviors more commonly associated with autism spectrum characteristics.
-            </p>
-          </div>
         </CardContent>
       </Card>
     </div>

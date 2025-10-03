@@ -170,7 +170,7 @@ export const AutismDashboard = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <ImprovedModelComparison models={models} />
+                <ImprovedModelComparison models={models} totalDataPoints={data.length} />
               </CardContent>
             </Card>
           </TabsContent>

@@ -5,12 +5,14 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 import { ModelComparison as ModelComparisonType } from '@/types/autism';
 import { Brain, TrendingUp } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { DataSplitControl } from './DataSplitControl';
 
 interface ImprovedModelComparisonProps {
   models: ModelComparisonType[];
+  totalDataPoints?: number;
 }
 
-export const ImprovedModelComparison = ({ models }: ImprovedModelComparisonProps) => {
+export const ImprovedModelComparison = ({ models, totalDataPoints = 0 }: ImprovedModelComparisonProps) => {
   const [trainingHistory, setTrainingHistory] = useState<any[]>([]);
 
   useEffect(() => {
@@ -71,6 +73,9 @@ export const ImprovedModelComparison = ({ models }: ImprovedModelComparisonProps
 
   return (
     <div className="space-y-6">
+      {/* Train-Test Split Configuration */}
+      <DataSplitControl totalDataPoints={totalDataPoints} />
+
       {/* Training Progress */}
       <Card>
         <CardHeader>
