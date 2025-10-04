@@ -10,9 +10,16 @@ import { DataSplitControl } from './DataSplitControl';
 interface ImprovedModelComparisonProps {
   models: ModelComparisonType[];
   totalDataPoints?: number;
+  onSplitChange?: (trainPercentage: number) => void;
+  currentSplit?: number;
 }
 
-export const ImprovedModelComparison = ({ models, totalDataPoints = 0 }: ImprovedModelComparisonProps) => {
+export const ImprovedModelComparison = ({ 
+  models, 
+  totalDataPoints = 0,
+  onSplitChange,
+  currentSplit = 80
+}: ImprovedModelComparisonProps) => {
   const [trainingHistory, setTrainingHistory] = useState<any[]>([]);
 
   useEffect(() => {
@@ -74,7 +81,14 @@ export const ImprovedModelComparison = ({ models, totalDataPoints = 0 }: Improve
   return (
     <div className="space-y-6">
       {/* Train-Test Split Configuration */}
-      <DataSplitControl totalDataPoints={totalDataPoints} />
+      <DataSplitControl 
+        totalDataPoints={totalDataPoints}
+        onSplit={(trainSize, testSize) => {
+          const trainPercentage = (trainSize / totalDataPoints) * 100;
+          onSplitChange?.(trainPercentage);
+        }}
+        currentSplit={currentSplit}
+      />
 
       {/* Training Progress */}
       <Card>

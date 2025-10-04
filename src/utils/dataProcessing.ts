@@ -289,9 +289,9 @@ export const calculateMetrics = (yTrue: number[], yPred: number[]): ModelMetrics
 };
 
 // Train and compare multiple models including Transformer
-export const getModelComparisons = async (data: AutismDataPoint[]): Promise<ModelComparison[]> => {
+export const getModelComparisons = async (data: AutismDataPoint[], testSize = 0.2): Promise<ModelComparison[]> => {
   const { X, y } = prepareFeatures(data);
-  const { XTrain, XTest, yTrain, yTest } = trainTestSplit(X, y);
+  const { XTrain, XTest, yTrain, yTest } = trainTestSplit(X, y, testSize);
   
   const models: ModelComparison[] = [];
   

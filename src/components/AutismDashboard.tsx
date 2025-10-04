@@ -16,6 +16,7 @@ export const AutismDashboard = () => {
   const [data, setData] = useState<AutismDataPoint[]>([]);
   const [models, setModels] = useState<ModelComparisonType[]>([]);
   const [loading, setLoading] = useState(true);
+  const [trainTestRatio, setTrainTestRatio] = useState(0.8);
 
   useEffect(() => {
     const initializeDashboard = async () => {
@@ -27,7 +28,8 @@ export const AutismDashboard = () => {
         setData(dataset);
         
         // Train models and get comparisons
-        const modelResults = await getModelComparisons(dataset);
+        const testSize = 1 - trainTestRatio;
+        const modelResults = await getModelComparisons(dataset, testSize);
         setModels(modelResults);
         
         toast({
@@ -47,7 +49,15 @@ export const AutismDashboard = () => {
     };
 
     initializeDashboard();
-  }, []);
+  }, [trainTestRatio]);
+
+  const handleTrainTestSplit = async (trainPercentage: number) => {
+    setTrainTestRatio(trainPercentage / 100);
+    toast({
+      title: "Retraining Model",
+      description: "Model is being retrained with new train-test split...",
+    });
+  };
 
   const stats = {
     totalCases: data.length,
@@ -124,75 +134,80 @@ export const AutismDashboard = () => {
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 max-w-7xl">
         <Tabs defaultValue="analysis" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 bg-card shadow-soft">
-            <TabsTrigger value="analysis" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+          <TabsList className="grid w-full grid-cols-4 bg-card shadow-soft p-1.5 h-auto">
+            <TabsTrigger value="analysis" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-3 text-base">
               Data Analysis
             </TabsTrigger>
-            <TabsTrigger value="models" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+            <TabsTrigger value="models" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-3 text-base">
               Model Performance
             </TabsTrigger>
-            <TabsTrigger value="prediction" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+            <TabsTrigger value="prediction" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-3 text-base">
               Prediction Tool
             </TabsTrigger>
-            <TabsTrigger value="chatbot" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+            <TabsTrigger value="chatbot" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-3 text-base">
               Assistance
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="analysis" className="space-y-6">
-            <Card className="shadow-medium">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <BarChart3 className="h-5 w-5 text-primary" />
+          <TabsContent value="analysis" className="space-y-6 animate-fade-in">
+            <Card className="shadow-medium border-primary/20">
+              <CardHeader className="bg-gradient-subtle">
+                <CardTitle className="flex items-center gap-2 text-xl">
+                  <BarChart3 className="h-6 w-6 text-primary" />
                   Dataset Analysis & Visualization
                 </CardTitle>
-                <CardDescription>
+                <CardDescription className="text-base">
                   Comprehensive analysis of the autism screening dataset with interactive visualizations
                 </CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="pt-6">
                 <EnhancedDataAnalysis data={data} />
               </CardContent>
             </Card>
           </TabsContent>
 
-          <TabsContent value="models" className="space-y-6">
-            <Card className="shadow-medium">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Target className="h-5 w-5 text-primary" />
+          <TabsContent value="models" className="space-y-6 animate-fade-in">
+            <Card className="shadow-medium border-primary/20">
+              <CardHeader className="bg-gradient-subtle">
+                <CardTitle className="flex items-center gap-2 text-xl">
+                  <Target className="h-6 w-6 text-primary" />
                   Deep Neural Network Performance
                 </CardTitle>
-                <CardDescription>
+                <CardDescription className="text-base">
                   Advanced machine learning model optimized for autism screening prediction
                 </CardDescription>
               </CardHeader>
-              <CardContent>
-                <ImprovedModelComparison models={models} totalDataPoints={data.length} />
+              <CardContent className="pt-6">
+                <ImprovedModelComparison 
+                  models={models} 
+                  totalDataPoints={data.length}
+                  onSplitChange={handleTrainTestSplit}
+                  currentSplit={trainTestRatio * 100}
+                />
               </CardContent>
             </Card>
           </TabsContent>
 
-          <TabsContent value="prediction" className="space-y-6">
-            <Card className="shadow-medium">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Brain className="h-5 w-5 text-primary" />
+          <TabsContent value="prediction" className="space-y-6 animate-fade-in">
+            <Card className="shadow-medium border-primary/20">
+              <CardHeader className="bg-gradient-subtle">
+                <CardTitle className="flex items-center gap-2 text-xl">
+                  <Brain className="h-6 w-6 text-primary" />
                   Autism Screening Tool
                 </CardTitle>
-                <CardDescription>
+                <CardDescription className="text-base">
                   Interactive assessment tool with personalized guidance for parents
                 </CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="pt-6">
                 <PredictionInterface models={models} />
               </CardContent>
             </Card>
           </TabsContent>
 
-          <TabsContent value="chatbot" className="space-y-6">
+          <TabsContent value="chatbot" className="space-y-6 animate-fade-in">
             <AutismChatbot />
           </TabsContent>
         </Tabs>

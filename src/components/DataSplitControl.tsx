@@ -8,10 +8,11 @@ import { toast } from '@/hooks/use-toast';
 interface DataSplitControlProps {
   totalDataPoints: number;
   onSplit?: (trainSize: number, testSize: number) => void;
+  currentSplit?: number;
 }
 
-export const DataSplitControl = ({ totalDataPoints, onSplit }: DataSplitControlProps) => {
-  const [trainPercentage, setTrainPercentage] = useState(80);
+export const DataSplitControl = ({ totalDataPoints, onSplit, currentSplit }: DataSplitControlProps) => {
+  const [trainPercentage, setTrainPercentage] = useState(currentSplit || 80);
   const [isSplitting, setIsSplitting] = useState(false);
 
   const trainSize = Math.round((totalDataPoints * trainPercentage) / 100);
