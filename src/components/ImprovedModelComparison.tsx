@@ -118,13 +118,10 @@ export const ImprovedModelComparison = ({
       {/* Model Performance */}
       <Card className="border-2 border-primary">
         <CardHeader>
-          <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Brain className="h-6 w-6 text-primary" />
-              <div>
-                <CardTitle className="text-2xl">{model.name}</CardTitle>
-                <CardDescription className="mt-1">{model.description}</CardDescription>
-              </div>
+              <CardTitle className="text-2xl">Model Performance Metrics</CardTitle>
             </div>
             <Badge className="bg-primary text-primary-foreground">Primary Model</Badge>
           </div>

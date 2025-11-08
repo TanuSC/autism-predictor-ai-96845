@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Brain, BarChart3, Users, Target, Database } from 'lucide-react';
-import { EnhancedDataAnalysis } from './EnhancedDataAnalysis';
+import { DatasetAnalysis } from './DatasetAnalysis';
 import { ImprovedModelComparison } from './ImprovedModelComparison';
 import { PredictionInterface } from './PredictionInterface';
 import { AutismChatbot } from './AutismChatbot';
@@ -163,7 +163,7 @@ export const AutismDashboard = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent className="pt-6">
-                <EnhancedDataAnalysis data={data} />
+                <DatasetAnalysis data={data} />
               </CardContent>
             </Card>
           </TabsContent>
@@ -173,11 +173,8 @@ export const AutismDashboard = () => {
               <CardHeader className="bg-gradient-subtle">
                 <CardTitle className="flex items-center gap-2 text-xl">
                   <Target className="h-6 w-6 text-primary" />
-                  Deep Neural Network Performance
+                  Model Performance Analysis
                 </CardTitle>
-                <CardDescription className="text-base">
-                  Advanced machine learning model optimized for autism screening prediction
-                </CardDescription>
               </CardHeader>
               <CardContent className="pt-6">
                 <ImprovedModelComparison 
