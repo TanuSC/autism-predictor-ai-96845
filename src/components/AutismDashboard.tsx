@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { Brain, BarChart3, Users, Target, Database } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Brain, BarChart3, Users, Target, Database, LogOut, Settings } from 'lucide-react';
 import { DatasetAnalysis } from './DatasetAnalysis';
 import { ImprovedModelComparison } from './ImprovedModelComparison';
 import { PredictionInterface } from './PredictionInterface';
@@ -11,12 +12,16 @@ import { PreprocessingSteps } from './PreprocessingSteps';
 import { AutismDataPoint, ModelComparison as ModelComparisonType } from '@/types/autism';
 import { loadAutismDataset, getModelComparisons } from '@/utils/dataProcessing';
 import { toast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 export const AutismDashboard = () => {
   const [data, setData] = useState<AutismDataPoint[]>([]);
   const [models, setModels] = useState<ModelComparisonType[]>([]);
   const [loading, setLoading] = useState(true);
   const [trainTestRatio, setTrainTestRatio] = useState(0.8);
+  const { signOut, isAdmin } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const initializeDashboard = async () => {
@@ -89,10 +94,34 @@ export const AutismDashboard = () => {
       {/* Header */}
       <div className="bg-gradient-primary text-primary-foreground py-8">
         <div className="container mx-auto px-4">
-          <div className="flex items-center gap-4 mb-4">
-            <Brain className="h-10 w-10" />
-            <div>
-              <h1 className="text-3xl font-bold">Autism Spectrum Disorder Prediction System</h1>
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-4">
+              <Brain className="h-10 w-10" />
+              <div>
+                <h1 className="text-3xl font-bold">Autism Spectrum Disorder Prediction System</h1>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              {isAdmin && (
+                <Button 
+                  variant="secondary" 
+                  size="sm"
+                  onClick={() => navigate('/admin')}
+                  className="gap-2"
+                >
+                  <Settings className="h-4 w-4" />
+                  Admin Panel
+                </Button>
+              )}
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => signOut()}
+                className="gap-2 bg-primary-foreground/10 hover:bg-primary-foreground/20 text-primary-foreground border-primary-foreground/20"
+              >
+                <LogOut className="h-4 w-4" />
+                Logout
+              </Button>
             </div>
           </div>
           
