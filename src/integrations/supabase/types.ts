@@ -14,6 +14,78 @@ export type Database = {
   }
   public: {
     Tables: {
+      prediction_results: {
+        Row: {
+          age: number
+          confidence: number
+          created_at: string
+          gender: string
+          id: string
+          prediction_result: Json
+          q1: string
+          q10: string
+          q2: string
+          q3: string
+          q4: string
+          q5: string
+          q6: string
+          q7: string
+          q8: string
+          q9: string
+          recommendation: string
+          risk_level: string
+          risk_percentage: number
+          total_score: number
+          user_id: string
+        }
+        Insert: {
+          age: number
+          confidence: number
+          created_at?: string
+          gender: string
+          id?: string
+          prediction_result: Json
+          q1: string
+          q10: string
+          q2: string
+          q3: string
+          q4: string
+          q5: string
+          q6: string
+          q7: string
+          q8: string
+          q9: string
+          recommendation: string
+          risk_level: string
+          risk_percentage: number
+          total_score: number
+          user_id: string
+        }
+        Update: {
+          age?: number
+          confidence?: number
+          created_at?: string
+          gender?: string
+          id?: string
+          prediction_result?: Json
+          q1?: string
+          q10?: string
+          q2?: string
+          q3?: string
+          q4?: string
+          q5?: string
+          q6?: string
+          q7?: string
+          q8?: string
+          q9?: string
+          recommendation?: string
+          risk_level?: string
+          risk_percentage?: number
+          total_score?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           approval_status: string | null
