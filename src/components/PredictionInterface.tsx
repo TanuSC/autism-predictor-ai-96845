@@ -17,12 +17,15 @@ import { ScoreBreakdown } from './ScoreBreakdown';
 import { SessionHistory } from './SessionHistory';
 import { saveSession } from '@/utils/sessionStorage';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface PredictionInterfaceProps {
   models: ModelComparison[];
 }
 
 export const PredictionInterface = ({ models }: PredictionInterfaceProps) => {
+  const { user } = useAuth();
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<PredictionInput>({
     age: 5,
@@ -117,12 +120,12 @@ export const PredictionInterface = ({ models }: PredictionInterfaceProps) => {
     
     const result = calculatePrediction();
     setPrediction(result);
-    setLoading(false);
     
     const totalScore = formData.responses.reduce((sum, response) => 
       sum + responseToNumber(response), 0
     );
 
+    // Save to localStorage
     saveSession({
       id: `session_${Date.now()}`,
       timestamp: new Date().toISOString(),
@@ -132,10 +135,48 @@ export const PredictionInterface = ({ models }: PredictionInterfaceProps) => {
       totalScore,
     });
     
+    // Save to database
+    if (user) {
+      const { error } = await supabase
+        .from('prediction_results')
+        .insert({
+          user_id: user.id,
+          age: formData.age,
+          gender: formData.gender,
+          q1: formData.responses[0],
+          q2: formData.responses[1],
+          q3: formData.responses[2],
+          q4: formData.responses[3],
+          q5: formData.responses[4],
+          q6: formData.responses[5],
+          q7: formData.responses[6],
+          q8: formData.responses[7],
+          q9: formData.responses[8],
+          q10: formData.responses[9],
+          total_score: totalScore,
+          risk_level: result.riskLevel,
+          confidence: result.confidence,
+          risk_percentage: result.riskPercentage || 0,
+          recommendation: result.recommendation,
+          prediction_result: result as any
+        });
+      
+      if (error) {
+        console.error('Error saving prediction:', error);
+        toast({
+          title: "Warning",
+          description: "Assessment complete but couldn't save to history.",
+          variant: "destructive"
+        });
+      }
+    }
+    
     toast({
       title: "Assessment Complete",
       description: `Risk Level: ${result.riskLevel} (${(result.confidence * 100).toFixed(0)}% confidence)`,
     });
+    
+    setLoading(false);
   };
 
   const resetAssessment = () => {

@@ -18,8 +18,25 @@ interface Profile {
   approval_status: 'pending' | 'approved' | 'rejected';
 }
 
+interface PredictionResult {
+  id: string;
+  user_id: string;
+  age: number;
+  gender: string;
+  total_score: number;
+  risk_level: string;
+  confidence: number;
+  risk_percentage: number;
+  created_at: string;
+  profiles: {
+    email: string;
+    full_name: string | null;
+  };
+}
+
 export default function AdminPanel() {
   const [profiles, setProfiles] = useState<Profile[]>([]);
+  const [predictions, setPredictions] = useState<PredictionResult[]>([]);
   const [filter, setFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('all');
   const { toast } = useToast();
   const { signOut } = useAuth();
@@ -42,11 +59,45 @@ export default function AdminPanel() {
     }
   };
 
+  const fetchPredictions = async () => {
+    const { data, error } = await supabase
+      .from('prediction_results')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Prediction fetch error:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to fetch prediction history',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    // Fetch profiles separately and merge
+    const { data: profilesData } = await supabase
+      .from('profiles')
+      .select('id, email, full_name');
+
+    const profilesMap = new Map(
+      profilesData?.map(p => [p.id, { email: p.email, full_name: p.full_name }]) || []
+    );
+
+    const predictionsWithProfiles = (data || []).map(pred => ({
+      ...pred,
+      profiles: profilesMap.get(pred.user_id) || { email: 'Unknown', full_name: null }
+    }));
+
+    setPredictions(predictionsWithProfiles as PredictionResult[]);
+  };
+
   useEffect(() => {
     fetchProfiles();
+    fetchPredictions();
 
     // Subscribe to real-time changes
-    const channel = supabase
+    const profilesChannel = supabase
       .channel('profiles_changes')
       .on(
         'postgres_changes',
@@ -61,8 +112,24 @@ export default function AdminPanel() {
       )
       .subscribe();
 
+    const predictionsChannel = supabase
+      .channel('predictions_changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'prediction_results',
+        },
+        () => {
+          fetchPredictions();
+        }
+      )
+      .subscribe();
+
     return () => {
-      supabase.removeChannel(channel);
+      supabase.removeChannel(profilesChannel);
+      supabase.removeChannel(predictionsChannel);
     };
   }, []);
 
