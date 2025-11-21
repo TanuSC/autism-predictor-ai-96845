@@ -198,6 +198,25 @@ export default function AdminPanel() {
     }
   };
 
+  const getRiskBadge = (level: string) => {
+    switch (level.toLowerCase()) {
+      case 'low':
+        return <Badge className="bg-green-500">Low Risk</Badge>;
+      case 'medium':
+        return <Badge className="bg-yellow-500">Medium Risk</Badge>;
+      case 'high':
+        return <Badge variant="destructive">High Risk</Badge>;
+      default:
+        return <Badge variant="secondary">{level}</Badge>;
+    }
+  };
+
+  const stats = {
+    totalUsers: profiles.length,
+    pendingUsers: profiles.filter(p => p.approval_status === 'pending').length,
+    totalPredictions: predictions.length,
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 p-6">
       <div className="max-w-7xl mx-auto space-y-6">
@@ -219,6 +238,33 @@ export default function AdminPanel() {
               Logout
             </Button>
           </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium text-muted-foreground">Total Users</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold">{stats.totalUsers}</div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium text-muted-foreground">Pending Approvals</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold">{stats.pendingUsers}</div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium text-muted-foreground">Total Predictions</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold">{stats.totalPredictions}</div>
+            </CardContent>
+          </Card>
         </div>
 
         <Card>
@@ -308,6 +354,62 @@ export default function AdminPanel() {
                 </div>
               </TabsContent>
             </Tabs>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Prediction History</CardTitle>
+            <CardDescription>
+              View all autism screening predictions from users
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="rounded-md border">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Date</TableHead>
+                    <TableHead>User</TableHead>
+                    <TableHead>Age</TableHead>
+                    <TableHead>Gender</TableHead>
+                    <TableHead>Total Score</TableHead>
+                    <TableHead>Risk Level</TableHead>
+                    <TableHead>Confidence</TableHead>
+                    <TableHead>Risk %</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {predictions.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={8} className="text-center text-muted-foreground py-8">
+                        No predictions found
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    predictions.map((prediction) => (
+                      <TableRow key={prediction.id}>
+                        <TableCell>
+                          {new Date(prediction.created_at).toLocaleDateString()}
+                        </TableCell>
+                        <TableCell>
+                          <div>
+                            <div className="font-medium">{prediction.profiles.full_name || 'N/A'}</div>
+                            <div className="text-sm text-muted-foreground">{prediction.profiles.email}</div>
+                          </div>
+                        </TableCell>
+                        <TableCell>{prediction.age}</TableCell>
+                        <TableCell className="capitalize">{prediction.gender}</TableCell>
+                        <TableCell>{prediction.total_score}</TableCell>
+                        <TableCell>{getRiskBadge(prediction.risk_level)}</TableCell>
+                        <TableCell>{(prediction.confidence * 100).toFixed(1)}%</TableCell>
+                        <TableCell>{prediction.risk_percentage.toFixed(1)}%</TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </div>
           </CardContent>
         </Card>
       </div>
