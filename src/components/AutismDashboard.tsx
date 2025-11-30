@@ -164,14 +164,18 @@ export const AutismDashboard = () => {
 
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8 max-w-7xl">
-        <Tabs defaultValue="analysis" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 bg-card shadow-soft p-1.5 h-auto">
-            <TabsTrigger value="analysis" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-3 text-base">
-              Data Analysis
-            </TabsTrigger>
-            <TabsTrigger value="models" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-3 text-base">
-              Model Performance
-            </TabsTrigger>
+        <Tabs defaultValue={isAdmin ? "analysis" : "prediction"} className="space-y-6">
+          <TabsList className={`grid w-full bg-card shadow-soft p-1.5 h-auto ${isAdmin ? 'grid-cols-4' : 'grid-cols-2'}`}>
+            {isAdmin && (
+              <>
+                <TabsTrigger value="analysis" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-3 text-base">
+                  Data Analysis
+                </TabsTrigger>
+                <TabsTrigger value="models" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-3 text-base">
+                  Model Performance
+                </TabsTrigger>
+              </>
+            )}
             <TabsTrigger value="prediction" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-3 text-base">
               Prediction Tool
             </TabsTrigger>
@@ -180,41 +184,45 @@ export const AutismDashboard = () => {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="analysis" className="space-y-6 animate-fade-in">
-            <Card className="shadow-medium border-primary/20">
-              <CardHeader className="bg-gradient-subtle">
-                <CardTitle className="flex items-center gap-2 text-xl">
-                  <BarChart3 className="h-6 w-6 text-primary" />
-                  Dataset Analysis & Visualization
-                </CardTitle>
-                <CardDescription className="text-base">
-                  Comprehensive analysis of the autism screening dataset with interactive visualizations
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="pt-6">
-                <DatasetAnalysis data={data} />
-              </CardContent>
-            </Card>
-          </TabsContent>
+          {isAdmin && (
+            <>
+              <TabsContent value="analysis" className="space-y-6 animate-fade-in">
+                <Card className="shadow-medium border-primary/20">
+                  <CardHeader className="bg-gradient-subtle">
+                    <CardTitle className="flex items-center gap-2 text-xl">
+                      <BarChart3 className="h-6 w-6 text-primary" />
+                      Dataset Analysis & Visualization
+                    </CardTitle>
+                    <CardDescription className="text-base">
+                      Comprehensive analysis of the autism screening dataset with interactive visualizations
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="pt-6">
+                    <DatasetAnalysis data={data} />
+                  </CardContent>
+                </Card>
+              </TabsContent>
 
-          <TabsContent value="models" className="space-y-6 animate-fade-in">
-            <Card className="shadow-medium border-primary/20">
-              <CardHeader className="bg-gradient-subtle">
-                <CardTitle className="flex items-center gap-2 text-xl">
-                  <Target className="h-6 w-6 text-primary" />
-                  Model Performance Analysis
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="pt-6">
-                <ImprovedModelComparison 
-                  models={models} 
-                  totalDataPoints={data.length}
-                  onSplitChange={handleTrainTestSplit}
-                  currentSplit={trainTestRatio * 100}
-                />
-              </CardContent>
-            </Card>
-          </TabsContent>
+              <TabsContent value="models" className="space-y-6 animate-fade-in">
+                <Card className="shadow-medium border-primary/20">
+                  <CardHeader className="bg-gradient-subtle">
+                    <CardTitle className="flex items-center gap-2 text-xl">
+                      <Target className="h-6 w-6 text-primary" />
+                      Model Performance Analysis
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-6">
+                    <ImprovedModelComparison 
+                      models={models} 
+                      totalDataPoints={data.length}
+                      onSplitChange={handleTrainTestSplit}
+                      currentSplit={trainTestRatio * 100}
+                    />
+                  </CardContent>
+                </Card>
+              </TabsContent>
+            </>
+          )}
 
           <TabsContent value="prediction" className="space-y-6 animate-fade-in">
             <Card className="shadow-medium border-primary/20">
