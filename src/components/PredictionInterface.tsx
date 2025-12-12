@@ -28,7 +28,7 @@ export const PredictionInterface = ({ models }: PredictionInterfaceProps) => {
   const { user } = useAuth();
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<PredictionInput>({
-    age: 5,
+    age: 2,
     gender: 'M',
     responses: new Array(10).fill('sometimes') as QuestionnaireResponse[]
   });
@@ -182,7 +182,7 @@ export const PredictionInterface = ({ models }: PredictionInterfaceProps) => {
   const resetAssessment = () => {
     setCurrentStep(0);
     setFormData({
-      age: 5,
+      age: 2,
       gender: 'M',
       responses: new Array(10).fill('sometimes') as QuestionnaireResponse[]
     });
@@ -409,7 +409,7 @@ export const PredictionInterface = ({ models }: PredictionInterfaceProps) => {
       <div className="space-y-6 animate-fade-in">
         <div className="text-center space-y-2">
           <h3 className="text-2xl font-bold">Child Demographics</h3>
-          <p className="text-muted-foreground text-lg">Please provide basic information about the child (ages 5-14)</p>
+          <p className="text-muted-foreground text-lg">Please provide basic information about the child (ages 2-14)</p>
         </div>
 
         <Card className="shadow-soft max-w-md mx-auto">
@@ -424,7 +424,7 @@ export const PredictionInterface = ({ models }: PredictionInterfaceProps) => {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {Array.from({ length: 10 }, (_, i) => i + 5).map(age => (
+                  {Array.from({ length: 13 }, (_, i) => i + 2).map(age => (
                     <SelectItem key={age} value={age.toString()}>
                       {age} years old
                     </SelectItem>
