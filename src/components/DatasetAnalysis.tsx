@@ -99,7 +99,7 @@ export const DatasetAnalysis = ({ data }: DatasetAnalysisProps) => {
   return (
     <div className="space-y-6">
       {/* Overview Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="bg-gradient-to-br from-primary/10 to-primary/5">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
@@ -139,20 +139,6 @@ export const DatasetAnalysis = ({ data }: DatasetAnalysisProps) => {
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-green-500/10 to-green-500/5">
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-sm font-medium">Class Balance</CardTitle>
-              <Users className="h-4 w-4 text-green-500" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{classBalance}%</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              {parseFloat(classBalance) >= 80 ? 'Well balanced' : 'Imbalanced dataset'}
-            </p>
-          </CardContent>
-        </Card>
       </div>
 
       {/* Charts Row 1 */}
