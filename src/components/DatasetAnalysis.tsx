@@ -284,7 +284,7 @@ export const DatasetAnalysis = ({ data }: DatasetAnalysisProps) => {
                 <li>• <strong>Completeness:</strong> 100% (no missing values)</li>
                 <li>• <strong>Response Scale:</strong> 5-point Likert scale (never to always)</li>
                 <li>• <strong>Score Range:</strong> {minScore}-{maxScore} points (out of 40)</li>
-                <li>• <strong>Class Balance:</strong> {classBalance}% ratio {parseFloat(classBalance) >= 80 ? '✓' : '⚠️'}</li>
+                
               </ul>
             </div>
           </div>
