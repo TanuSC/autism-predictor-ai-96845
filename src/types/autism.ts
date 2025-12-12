@@ -60,7 +60,7 @@ export interface SessionHistory {
 }
 
 export const QUESTIONNAIRE_ITEMS = [
-  'Eye Contact - How often does the child avoid making eye contact with family members or others?',
+  'Eye Contact - How often does the child make eye contact with family members or others?',
   'Repetitive Movements - How often does the child show repeated movements like hand-flapping, rocking or spinning objects?',
   'Sensory Sensitivity - How often does the child react strongly to loud sounds, bright lights or certain textures?',
   'Change in Routine - How often does the child become upset when daily routines or activities are changed?',
