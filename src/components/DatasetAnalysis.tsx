@@ -1,7 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { Database, Users, TrendingUp, PieChartIcon } from 'lucide-react';
+import { Users } from 'lucide-react';
 import { AutismDataPoint } from '@/types/autism';
 
 interface DatasetAnalysisProps {
@@ -98,49 +98,6 @@ export const DatasetAnalysis = ({ data }: DatasetAnalysisProps) => {
 
   return (
     <div className="space-y-6">
-      {/* Overview Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="bg-gradient-to-br from-primary/10 to-primary/5">
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-sm font-medium">Total Samples</CardTitle>
-              <Database className="h-4 w-4 text-primary" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totalSamples}</div>
-            <p className="text-xs text-muted-foreground mt-1">Complete dataset entries</p>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-gradient-to-br from-destructive/10 to-destructive/5">
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-sm font-medium">ASD Positive</CardTitle>
-              <TrendingUp className="h-4 w-4 text-destructive" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{asdPositive}</div>
-            <p className="text-xs text-muted-foreground mt-1">{asdPercentage}% of total</p>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-gradient-to-br from-blue-500/10 to-blue-500/5">
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-sm font-medium">ASD Negative</CardTitle>
-              <PieChartIcon className="h-4 w-4 text-blue-500" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{asdNegative}</div>
-            <p className="text-xs text-muted-foreground mt-1">{(100 - parseFloat(asdPercentage)).toFixed(1)}% of total</p>
-          </CardContent>
-        </Card>
-
-      </div>
-
       {/* Charts Row 1 */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
